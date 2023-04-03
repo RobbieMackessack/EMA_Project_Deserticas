@@ -1,0 +1,83 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.colors import ListedColormap
+
+## Indicies
+# l_c - soil [1,2]
+# v_c - vegetation [1,2]
+# w_c - climate [1,2]
+# m_c - management [1,2]
+# p_c - land use type [1,6]
+# e_c - exploitabilitiy {0,1}
+# o_c - owernship {1,2,...,k} - to be defined
+
+## Tuple
+# S(c) = (l_c,v_c,w_c,m_c,p_c,e_c,o_c) 
+# S(c)+ = (l_c+, v_c+, w_c+, m_c+, p_c, e_c+, o_c)
+
+##Simplfied Tuple
+# ds = (l_c x v_c x w_c x m_c)^1/4 - [1,2]
+
+### land use type and employability will not change between timesteps 
+
+l = np.array(((1,1,1,1,2,1,1,1,1,1),
+              (1,1,1,1,2,1,1,1,1,1),
+              (1,1,1,1,2,1,1,1,1,1),
+              (1,1,1,1,2,1,1,1,1,1),
+              (1,1,1,1,2,1,1,1,1,1), 
+              (1,1,1,1,2,1,1,1,1,1), #5
+              (1,1,1,1,2,1,1,1,1,1), 
+              (1,1,1,1,2,1,1,1,1,1),
+              (1,1,1,1,2,1,1,1,1,1), 
+              (1,1,1,1,2,1,1,1,1,1)))
+
+v = np.ones((10, 10))
+w = np.ones((10, 10))
+m = np.ones((10, 10))
+p = np.ones((10, 10))
+e = np.ones((10, 10))
+o = np.zeros((10, 10))
+
+
+i=4
+j=4
+S = np.stack([l, v, w, p, e, o])
+S_c = S[:,i,j]
+
+## Define Neighbourhood
+
+#def neighborhood(i, j):
+
+
+##define transition function indicies
+# alpha_i c [0;1]
+# sum (i=1-9) alpha_i = 1
+
+# alpha_l = (alpha_l1; alpha_l2; alpha_l9)
+# aplha_v = (alpha_v3; alpha_v4; alpha_v9)
+# aplha_w = (alpha_w1; alpha_w3; alpha_w5; alpha_w6)
+# aplha_m = (alpha_m7; alpha_m8)
+
+alpha_l = [1,1,1]
+alpha_v = [1,1,1]
+alpha_w = [1,1,1,1]
+alpha_m = [1,1]
+
+l_c = S_c[0]
+v_c = S_c[1]
+w_c = S_c[2]
+m_c = S_c[3]
+ds_c = (l_c * v_c * w_c * m_c)**(1/4)
+
+l_Nc = (l[i,j] *l[i,j-1]* l[i,j+1]* l[i-1,j-1] * l[i-1,j] * l[i-1,j+1] * l[i+1, j-1]* l[i+1,j] * l[i+1,j+1])**(1/9)
+
+# For l
+alpha = [alpha_l[0], alpha_l[1], 0, 0, 0, 0, 0, 0, alpha_l[2]]
+g_alpha_l = l_c**alpha[0] * l_Nc**alpha[1] 
+#Define Transition Fucntions f_x
+## f_x = g_alpha_N_c for normal conditions (i.e. no stress/properties 1&2)
+#g_alpha_N_c = l_c**alpha[0] * l_Nc**alpha[1] * v_c**alpha[2] * v_Nc**alpha[3] * w_c**alpha[4] * w_Nc**alpha[5] * m_c**alpha[6] * m_Nc**alpha[7] * ds_c**alpha[8]
+
+
+print(alpha_l[0])
+print(l_Nc)
